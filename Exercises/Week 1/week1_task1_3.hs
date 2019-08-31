@@ -29,4 +29,3 @@ countCredits cardOne cardTwo
     | (snd cardOne == succ(snd cardTwo) ) || (snd cardTwo == succ(snd cardOne)) = 4
     | fst cardOne == fst cardTwo = 2
     | otherwise = 0
-
