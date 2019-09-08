@@ -1,12 +1,22 @@
+{--
+Write a function that, given two strings s1 and s2, computes a common "substring" of s1 and s2 as follows. The function finds the 
+earliest common character c (closest to head of either s1 or s2 and appearing in both sequences). The function removes c and all 
+the characters before it in both strings, puts c in the output string, and continues. E.g. s1 = "aabbccdd", s2="bbbbad" -> "bbd”.
 
+If there are two earliest common characters, you may pick either one, that is, from s1 or s2. Please note that the result is not 
+what is normally meant by substring.
+
+Use recursion.
+--}
 myFunction :: String -> String -> String
-myFunction _ [] = "[INVALID] Empty parameter"
-myFunction [] _ = "[INVALID] Empty parameter"
-myFunction string1 string2
-    | string1 == string2 = string1
-    | otherwise = compareStrings string1 string2 ""
+myFunction _ [] = ""
+myFunction [] _ = ""
+myFunction (x:xs) (y:ys)
+    | x == y = x:(computeAfterFirstEqualChar xs ys)
+    | otherwise = myFunction xs (y:ys)
         where
-            compareStrings (x:xs) (y:ys) subString
-                | xs == [] || ys == [] = subString
-                | x /= y = compareStrings xs (y:ys) subString
-                | otherwise = compareStrings xs ys subString 
+            computeAfterFirstEqualChar _ [] = ""
+            computeAfterFirstEqualChar [] _ = ""
+            computeAfterFirstEqualChar (x:xs) (y:ys)
+                | x == y = x:(computeAfterFirstEqualChar xs ys)
+                | otherwise = computeAfterFirstEqualChar xs ys
