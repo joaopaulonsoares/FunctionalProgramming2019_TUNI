@@ -22,3 +22,12 @@ checkGap chars gap word = countTimes chars gap word 0
             | xs == [] = counter
             | ( (fst chars) == x ) && ( (xs !! gap) == (snd chars) ) == True = countTimes chars gap xs (counter + 1)
             | otherwise = countTimes chars gap xs counter
+
+checkGap2 :: (Char,Char) -> Int -> String -> Int
+checkGap2 chars2 gap2 word2 = countTimes2 chars2 gap2 word2
+    where
+        countTimes2 chars2 gap2 (x2:xs2)
+            | (length(xs2) <= gap2 ) = 0
+            | xs2 == [] = 0
+            | ( (fst chars2) == x2 ) && ( (xs2 !! gap2) == (snd chars2) ) == True = 1 + (countTimes2 chars2 gap2 xs2)
+            | otherwise = countTimes2 chars2 gap2 xs2
