@@ -17,9 +17,10 @@ For example for "xy765" and "abc2311" the result is (2+3)/(5+7)
 
 functionOne :: String -> String -> Float
 functionOne [] [] = 0
-functionOne string1 string = 2.1
+functionOne x y = (countNotXinY + countNotYinX) / (sizeX + sizeY)
+    | where
 
-
+{--
 countCharsInString :: String -> String -> Int
 countCharsInString string1 string2
     | string1 == string2 = length(string2)
@@ -29,3 +30,18 @@ countCharsInString string1 string2
                 | xs == [] = counter
                 | (((x `elem` ys) == True ) && ( (x `elem` diffChars) == False) ) == True = countFunction xs ys diffChars (counter+1)
                 | otherwise = countFunction xs ys diffChars counter
+
+countCharsInString :: String -> String -> Int
+countCharsInString _ [] = 0
+countCharsInString [] _ = 0
+countCharsInString (x:xs) ys
+    | (x `elem` ys) == True  = 1 + (countCharsInString xs (filter (==x) ys) )
+    | otherwise = countCharsInString xs ys
+    --}
+
+countCharsNotInString :: String -> String -> Int
+countCharsNotInString _ [] = 0
+countCharsNotInString [] _ = 0
+countCharsNotInString (x:xs) ys
+    | (x `elem` ys) == True  = countCharsNotInString xs ys
+    | otherwise = 1 + (countCharsNotInString xs (filter (==x) ys) )
