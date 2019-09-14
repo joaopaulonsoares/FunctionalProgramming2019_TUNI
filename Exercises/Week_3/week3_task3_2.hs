@@ -13,35 +13,36 @@ b)
 (count of characters in x that are other than any of '0'..'9') + (count of characters in y that are other than any of '0'..'9') / ((length of x) + (length of y))
 If both lists are empty, then the distance is 0.
 For example for "xy765" and "abc2311" the result is (2+3)/(5+7)
+
 --}
 
-functionOne :: String -> String -> Float
-functionOne [] [] = 0
-functionOne x y = (countNotXinY + countNotYinX) / (sizeX + sizeY)
-    | where
+functionA :: String -> String -> Float
+functionA [] [] = 0
+functionA x y = (countNotXinY + countNotYinX) / (sizeX + sizeY)
+    where countNotXinY = countCharsNotInString x y
+          countNotYinX = countCharsNotInString y x
+          sizeX = fromIntegral(length x)
+          sizeY = fromIntegral(length y)
 
-{--
-countCharsInString :: String -> String -> Int
-countCharsInString string1 string2
-    | string1 == string2 = length(string2)
-    | otherwise = countFunction string1 string2 "" 0
-        where 
-            countFunction (x:xs) ys diffChars counter
-                | xs == [] = counter
-                | (((x `elem` ys) == True ) && ( (x `elem` diffChars) == False) ) == True = countFunction xs ys diffChars (counter+1)
-                | otherwise = countFunction xs ys diffChars counter
+functionB :: String -> String -> Float
+functionB [] [] = 0
+functionB x y = (countNotCharsInX + countNotCharsInY) / (sizeX + sizeY)
+    where countNotCharsInX = countCharsNotDigits x
+          countNotCharsInY = countCharsNotDigits y
+          sizeX = fromIntegral(length x)
+          sizeY = fromIntegral(length y)
 
-countCharsInString :: String -> String -> Int
-countCharsInString _ [] = 0
-countCharsInString [] _ = 0
-countCharsInString (x:xs) ys
-    | (x `elem` ys) == True  = 1 + (countCharsInString xs (filter (==x) ys) )
-    | otherwise = countCharsInString xs ys
-    --}
-
-countCharsNotInString :: String -> String -> Int
+-- Auxiliar functions
+countCharsNotInString :: String -> String -> Float
 countCharsNotInString _ [] = 0
 countCharsNotInString [] _ = 0
 countCharsNotInString (x:xs) ys
     | (x `elem` ys) == True  = countCharsNotInString xs ys
     | otherwise = 1 + (countCharsNotInString xs (filter (==x) ys) )
+
+digits = ['0'..'9']
+countCharsNotDigits :: String  -> Float
+countCharsNotDigits [] = 0
+countCharsNotDigits (x:xs)
+    | (x `elem` digits) == True  = countCharsNotDigits xs
+    | otherwise = 1 + (countCharsNotDigits xs)
