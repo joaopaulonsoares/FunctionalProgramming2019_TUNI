@@ -16,29 +16,31 @@ For example for "xy765" and "abc2311" the result is (2+3)/(5+7)
 
 --}
 
-functionA :: String -> String -> Float
-functionA [] [] = 0
-functionA x y = (countNotXinY + countNotYinX) / (sizeX + sizeY)
+functionMeasureDistanceA :: String -> String -> Float
+functionMeasureDistanceA [] [] = 0
+functionMeasureDistanceA x y = (countNotXinY + countNotYinX) / (sizeX + sizeY)
     where countNotXinY = countCharsNotInString x y
           countNotYinX = countCharsNotInString y x
           sizeX = fromIntegral(length x)
           sizeY = fromIntegral(length y)
 
-functionB :: String -> String -> Float
-functionB [] [] = 0
-functionB x y = (countNotCharsInX + countNotCharsInY) / (sizeX + sizeY)
-    where countNotCharsInX = countCharsNotDigits x
-          countNotCharsInY = countCharsNotDigits y
-          sizeX = fromIntegral(length x)
-          sizeY = fromIntegral(length y)
-
--- Auxiliar functions
 countCharsNotInString :: String -> String -> Float
 countCharsNotInString _ [] = 0
 countCharsNotInString [] _ = 0
 countCharsNotInString (x:xs) ys
+    | ys == [] = fromIntegral(length (x:xs))
     | (x `elem` ys) == True  = countCharsNotInString xs ys
-    | otherwise = 1 + (countCharsNotInString xs (filter (==x) ys) )
+    | otherwise = 1 + (countCharsNotInString xs ys )
+
+
+
+functionMeasureDistanceB :: String -> String -> Float
+functionMeasureDistanceB [] [] = 0
+functionMeasureDistanceB x y = (countNotCharsInX + countNotCharsInY) / (sizeX + sizeY)
+    where countNotCharsInX = countCharsNotDigits x
+          countNotCharsInY = countCharsNotDigits y
+          sizeX = fromIntegral(length x)
+          sizeY = fromIntegral(length y)
 
 digits = ['0'..'9']
 countCharsNotDigits :: String  -> Float
