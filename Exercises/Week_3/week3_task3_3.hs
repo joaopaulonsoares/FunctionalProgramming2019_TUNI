@@ -22,8 +22,17 @@ TEST CASES
     => (A)
         -> functionA functionMeasureDistanceB 0.2 "123a" ["456789b","45","abc", "ab1", "a12", "abcdefghij"]
         -> functionA functionMeasureDistanceA 0.3 "aaabc" ["aabdd","a","aa","abdd","bcbcb","", "abcdefghij"]
-
     => (B)
+        -> functionB functionMeasureDistanceA 0.3 "aaabc" ["aabdd","a","aa","abdd","bcbcb","", "abcdefghij"]
+        -> functionB functionMeasureDistanceB 0.2 "123a" ["456789b","45","abc", "ab1", "a12", "abcdefghij"]
+    
+    => (C)
+        -> functionC functionMeasureDistanceA 0.3 "aaabc" ["aabdd","a","aa","abdd","bcbcb","", "abcdefghij"]
+        -> functionC functionMeasureDistanceB 0.2 "123a" ["456789b","45","abc", "ab1", "a12", "abcdefghij"]
+    
+    => (D)
+        -> functionD functionMeasureDistanceA 0.3 "aaabc" ["aabdd","a","aa","abdd","bcbcb","", "abcdefghij"]
+        -> functionD functionMeasureDistanceB 0.2 "123a" ["456789b","45","abc", "ab1", "a12", "abcdefghij"]
 --}
 
 -- (A) Basic Recursion
@@ -34,11 +43,16 @@ functionA f d z (s:ss)
     | otherwise = functionA f d z ss
 
 -- (B) List Comprehension
+functionB :: (String -> String -> Float) -> Float -> String -> [String] -> [String]
+functionB f d z ss = [ s | s <- ss, (f z s) <= d]  
 
 -- (C) Foldl
+functionC :: (String -> String -> Float) -> Float -> String -> [String] -> [String]
+functionC f d z ss =  foldl (\def x -> if (f z x) <= d then x : def else def) [] ss
 
 -- (D) Using the filter function
-
+functionD :: (String -> String -> Float) -> Float -> String -> [String] -> [String]
+functionD f d z ss = filter (\s -> (f z s) <= d) ss
 
 -- =================================================  Auxiliar Functions ===========================================
 functionMeasureDistanceA :: String -> String -> Float
