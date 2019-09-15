@@ -10,26 +10,20 @@ Calling this function with fuction of
     should return [["aaabc","aabdd","aa","bcbcb"],["aaabc","aabdd","abdd"],["a","aa"],["aaabc","a","aa"],["aabdd","abdd"],["aaabc","bcbcb"],[""],["abcdefghij"]].
 3.2b), d=0.2 and ss=["123a","456789b","45","abc", "ab1", "a12", "abcdefghij"] 
     should return [["456789b","45"],["123a","456789b","45","a12"],["123a","456789b","45","a12"],[],[],["456789b","45"],[]].
+
+TEST CASES
+    -> function functionMeasureDistanceA 0.3 "aaabc" ["aabdd","a","aa","abdd","bcbcb","", "abcdefghij"]    
+    -> function functionMeasureDistanceB 0.2 "123a" ["456789b","45","abc", "ab1", "a12", "abcdefghij"]
 --}
 
-
-function :: (String -> String -> Float) -> Float -> [String] -> [[String]]
 function f d (x:xs)
     | xs == [] = [[]]
-    | otherwise = teste
-    where teste = functionA f d x (x:xs) (x:xs)
+    | otherwise = adaptorFunction f d x (x:xs) (x:xs)
 
--- (A) Basic Recursion
-functionA :: (String -> String -> Float) -> Float -> String -> [String] -> [String] -> [[String]]
-functionA _ _ _ [] _ = []
-functionA f d z (s:ss) list
-    | ss /= [] = (functionDistance f d s list):(functionA f d z ss list)
-    | otherwise = functionA f d z ss list
-
-
--- (B) List Comprehension
-functionDistance :: (String -> String -> Float) -> Float -> String -> [String] -> [String]
-functionDistance f d z ss = [ s | s <- ss, (f z s) <= d]  
+adaptorFunction :: (String -> String -> Float) -> Float -> String -> [String] -> [String] -> [[String]]
+adaptorFunction _ _ _ [] _ = []
+adaptorFunction f d z (s:ss) list = (functionDistance f d s list):(adaptorFunction f d z ss list)
+    where functionDistance f d z ss = [ s | s <- ss, (f z s) <= d]  
 
 -- =================================================  Auxiliar Functions ===========================================
 
