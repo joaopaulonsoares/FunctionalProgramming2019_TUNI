@@ -15,7 +15,7 @@ TEST CASES
     -> function functionMeasureDistanceA 0.3 "aaabc" ["aabdd","a","aa","abdd","bcbcb","", "abcdefghij"]    
     -> function functionMeasureDistanceB 0.2 "123a" ["456789b","45","abc", "ab1", "a12", "abcdefghij"]
 --}
-
+function :: (String -> String -> Float) -> Float -> [String] -> [[String]]
 function f d (x:xs)
     | xs == [] = [[]]
     | otherwise = adaptorFunction f d x (x:xs) (x:xs)
