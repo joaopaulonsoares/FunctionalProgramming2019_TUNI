@@ -19,4 +19,25 @@ that throws an error if CountryCode or PhoneNo is a negative integer and otherwi
 
 Note: It is not necessarily recommended to pollute the namespace with all kinds of type synonyms, but they can be useful for example in case you wanted to change the value of CountryCode into String in this case. (You would get errors telling you where you need to change some behavior)
 Note: You can still make the mistake of using a value of type CountryCode as PhoneNo.
+
+-> Test Cases
+    - function WorkLandline 358 23124312
+    - function PrivateMobile 55 5342362
+    - function WorkLandline (-358) 23124312
+    - function PrivateMobile 55 (-5342362)
+
 --}
+
+data PhoneType = WorkLandline | PrivateMobile | WorkMobile | Other
+                 deriving(Show, Read, Eq)
+
+type CountryCode = Integer
+type PhoneNo = Integer
+
+
+data Phone = Phone { phoneType :: PhoneType, countryCode :: CountryCode, phoneNo :: PhoneNo} deriving (Show, Eq, Read)
+
+function :: PhoneType -> CountryCode -> PhoneNo -> Phone
+function phoneType countryCode phoneNo
+    | countryCode < 0 || phoneNo < 0 = error "Country Code or Phone Number are negative"
+    | otherwise = Phone phoneType countryCode phoneNo

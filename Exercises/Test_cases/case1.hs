@@ -1,12 +1,14 @@
-import Data.List
-import Data.Maybe
--- Goes through the first string character by character and compares them to all the characters in second string. 
--- If strings have a common character, prints the common character and deletes it and all the characters before it from both strings.
--- Please note, if you want the answer of the example given in the assignment, you need to call commonString "bbbad" "aabbccdd" 
-commonString :: String -> String -> String
-commonString _ [] = []
-commonString [] _ = []
-commonString (x:xs) y
-        |length y == 0 = []
-        |elemIndex x y /= Nothing = x:commonString xs (drop ((fromJust (elemIndex x y)) + 1) y)
-        |otherwise = commonString xs y
+distFilt :: (String -> String -> Float) -> Float -> String -> [String] -> [String]
+distFilt f d z ss = [w | w <- ss, f w z <= d]
+
+simStrings :: (String -> String -> Float) -> Float -> [String] -> [[String]]
+simStrings f d ss = fxoldr (\z acc -> (distFilt f d z ss):acc) [] ss
+
+
+--Function from Task 3.3. Function that uses list comprehension was chosen, but you could have chosen any of them, although using any of them was not required.
+listComp :: (String -> String -> Float) -> Float -> String -> [String] -> [String]
+listComp f d z ss = [x | x <- ss, f x z <= d] 
+
+answer :: (String -> String -> Float) -> Float -> [String] -> [[String]]
+answer f d ss = map theFunction ss
+    where theFunction s = listComp f d s ss
