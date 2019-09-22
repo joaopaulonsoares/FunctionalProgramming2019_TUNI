@@ -25,4 +25,48 @@ Make a function of type
 but this time do not worry about the values of CountryCode and PhoneNo, since if they are created with the functions you made before they are already correct.
 
 Note: Another option would be to use newtype keyword instead of data keyword for CountryCode and PhoneNo, but we will get to it later.
+
+-> Test Cases (Based on the forum topic ("Example inputs and outputs for week 4 tasks") answear)
+    OBS: This test cases are to be tested on GHCI
+
+    - show $ function WorkLandline (fCountryCode (-358)) (fPhoneNo 123456789)
+    - show $ function WorkLandline (fCountryCode 358) (fPhoneNo 123456789)
+    - show $ function WorkLandline (fCountryCode 358) (fPhoneNo (-123456789))
+
 --}
+
+data PhoneType = WorkLandline | PrivateMobile | WorkMobile | Other
+                 deriving(Show, Read, Eq)
+
+-- Country Code
+data CountryCode = CountryCode Integer deriving(Eq)
+instance Show CountryCode where
+    show (CountryCode n) =  "+" ++ show n 
+
+fCountryCode :: Integer -> CountryCode
+fCountryCode countryCode
+    | countryCode < 0 = error "Country Code negative"
+    | otherwise = CountryCode countryCode
+
+-- Phone Number
+data PhoneNo = PhoneNo Integer deriving(Eq)
+instance Show PhoneNo where
+    show (PhoneNo pn) = show pn
+
+fPhoneNo :: Integer -> PhoneNo
+fPhoneNo phoneNo
+    | phoneNo < 0 = error "Phone Number negative"
+    | otherwise = PhoneNo phoneNo
+    
+-- Phone
+data Phone = Phone{ 
+  phoneType :: PhoneType, 
+  countryCode :: CountryCode, 
+  phoneNo :: PhoneNo
+} deriving(Eq)
+instance Show Phone where
+    show (Phone pt cc pn) = show cc ++ " " ++ show pn ++ " " ++ "(" ++ show pt ++ ")"
+
+-- Main Function
+function ::  PhoneType -> CountryCode -> PhoneNo -> Phone
+function pt cc pn = Phone pt cc pn
