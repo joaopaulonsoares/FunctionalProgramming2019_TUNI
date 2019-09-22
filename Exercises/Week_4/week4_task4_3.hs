@@ -17,4 +17,57 @@ If the input is correct, create a telephone number. Else, call error to throw an
 Note: In this exercise do not try to create a custom Read instance, because it is probably unnecessarily hard at this point.
 
 Note: Make sure not to import your answer for Task4.2 in your answer for this task, since in peer-reviewing the file will not be present. (You will need to copy-paste)
+
+-> TEST CASES
+    - readPhone "Other" "+358" "123456789"
+    - readPhone "Other" "0008" "123456789"
+    - readPhone "Other" "00358" "123456789"
+    - readPhone "PrivateMobile" "+358" "123456789"
 --}
+-- ================= EXERCISE 4_2 FUNCTIONS =====================
+data PhoneType = WorkLandline | PrivateMobile | WorkMobile | Other
+    deriving(Show, Read, Eq)
+
+-- Country Code
+data CountryCode = CountryCode Integer deriving(Eq)
+instance Show CountryCode where
+    show (CountryCode n) =  "+" ++ show n 
+
+fCountryCode :: Integer -> CountryCode
+fCountryCode countryCode
+    | countryCode < 0 = error "Country Code negative"
+    | otherwise = CountryCode countryCode
+
+-- Phone Number
+data PhoneNo = PhoneNo Integer deriving(Eq)
+instance Show PhoneNo where
+    show (PhoneNo pn) = show pn
+
+fPhoneNo :: Integer -> PhoneNo
+fPhoneNo phoneNo
+    | phoneNo < 0 = error "Phone Number negative"
+    | otherwise = PhoneNo phoneNo
+
+-- Phone
+data Phone = Phone{ 
+    phoneType :: PhoneType, 
+    countryCode :: CountryCode, 
+    phoneNo :: PhoneNo
+} deriving(Eq)
+instance Show Phone where
+    show (Phone pt cc pn) = show cc ++ " " ++ show pn ++ " " ++ "(" ++ show pt ++ ")"   
+
+-- ================================= exercise 3 =========================
+available_countries = [358,55,100,1,2,3]
+
+readPhone :: String -> String -> String -> Phone
+readPhone pt cc pn
+    | elem ccNumber available_countries = createPhoneNumber (read pt :: PhoneType) ccNumber (read pn :: Integer)
+    | otherwise = error "Error. Phone can't be created. (Country code not in available list)"
+    where createPhoneNumber pt2 cc2 pn2 = Phone pt2 (fCountryCode cc2) (fPhoneNo pn2)
+          ccNumber = transfCountryCode cc
+
+transfCountryCode :: String -> Integer
+transfCountryCode (x:xs)
+    | x == '+' = read xs :: Integer
+    | otherwise = read (x:xs) :: Integer
