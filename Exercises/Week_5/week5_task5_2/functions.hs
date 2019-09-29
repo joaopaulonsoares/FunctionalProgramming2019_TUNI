@@ -1,29 +1,6 @@
-{--
-Take task 4.3 (You can use the example solution) and make the following changes to it:
--Use newtype instead of data wherever you can. (Easiest is probably to check from the dates.hs example file how to use newtype.)
--Change the definition of Phone so that country code and phone type are optional using Maybe.
--Change the Show instance of Phone so that it does not show country code or phone type if they are Nothing.
--Make the readPhone function accept empty strings for phone type and country code. If they are empty make them Nothing.
+module W5T2Functions where
 
--> Test Cases
-   - readPhone "" "" "123456789"
-   - readPhone "Other" "+358" "123456789"
-   - readPhone "Other" "0" "123456789"
-   - readPhone "" "" ""
-
--> PS: I was not able to remove the "Just" or "Nothing" from the show instance, so when printing the 
-Phone it looks like: "Just +358 123456789 (Just Other)" .
-
---}
-
-data PhoneType = WorkLandline | PrivateMobile | WorkMobile | Other deriving(Show, Read, Eq)
-
-newtype CountryCode  = MakeCountryCode Integer deriving(Eq,Read)
-newtype PhoneNo      = MakePhoneNo Integer deriving(Eq,Read)
-data Phone        = MakePhone { phoneType   :: Maybe PhoneType
-                                ,countryCode :: Maybe CountryCode
-                                ,phoneNo     :: PhoneNo    
-                                } deriving(Eq, Read)
+import W5T2DataDefinitions
 
 toCountryCode :: Integer -> CountryCode
 toCountryCode x | x < 0 = error "Invalid country code."
