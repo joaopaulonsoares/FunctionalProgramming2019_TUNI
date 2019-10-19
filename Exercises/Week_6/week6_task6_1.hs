@@ -7,7 +7,13 @@ Hints: (Use of these hints is not necessary)
 Read instance. (But then you might construct negative values)
 -You can make your own typeclass, which has a read-like function and then make use of the readMaybe function in the 
 instance declarations.
--You can make a polymorphic function that takes a function, which is used to constuct the value.
+-You can make a polymorphic function that takes a function, which is used to constuct the value.]
+
+-> TEST CASES
+    - readPhone "Other" "+358" "123456789"
+    - readPhone "Other" "0008" "123456789"
+    - readPhone "Other" "00358" "123456789"
+    - readPhone "PrivateMobile" "+358" "123456789"
 --}
 
 data PhoneType = WorkLandline | PrivateMobile | WorkMobile | Other deriving(Show, Read, Eq)
@@ -70,4 +76,4 @@ readPhone ptStr ccStr pnStr = toPhone pt cc pn
             let x = (readMaybe (removePrefix ccStr) :: Maybe Int)
             in case x == Nothing of
               True  -> Nothing
-              False -> (Just(toCountryCode $ read (removePrefix ccStr)))--False -> (Just(toCountryCode $ read (removePrefix ccStr)))
+              False -> (Just(toCountryCode $ read (removePrefix ccStr)))
