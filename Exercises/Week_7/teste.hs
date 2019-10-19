@@ -140,3 +140,6 @@ examplePhonebook =
 
 
 -- add Maria WorkMobile +358 123457
+
+tellAboutEventName :: String -> IO ()
+tellAboutEventName teste = putStrLn "teste"

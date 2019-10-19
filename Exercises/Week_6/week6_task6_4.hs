@@ -115,3 +115,7 @@ addEntry nm ptStr ccStr pnStr oldBook =
   in case numberCheck of
   True  -> oldBook            -- <-Here the newEntry would not be evaluated.
   False -> newEntry : oldBook -- <-Here the newEntry would be evaluated.
+
+
+tellAboutEventName :: String -> IO ()
+tellAboutEventName teste = putStrLn "teste"

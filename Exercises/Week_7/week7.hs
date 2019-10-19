@@ -3,10 +3,10 @@
 data EventInfo = EventInfo { name :: String
                            , place :: String
                            , date :: Date
-                           } deriving(Eq,Show)
+                           } deriving(Eq)
 
---instance Show EventInfo where
---  show (EventInfo n p d) =  "Event " ++ show n ++ " happens at "  ++ show p ++ " on "  ++ show d
+instance Show EventInfo where
+  show (EventInfo n p d) =  "Event " ++ show n ++ " happens at "  ++ show p ++ " on "  ++ show d
 
 makeEvent :: String -> String -> [Integer] -> EventInfo
 makeEvent name place date = EventInfo name place (makeDate3 date)
@@ -117,32 +117,76 @@ loop ioEvents =
    then putStrLn "bye"
    else doCommand input ioEvents    
 --Event 'Event' happens at 'Place' on '2019-10-08'
+--Event 'Joao' happens at 'Place' on '2019-10-08'
+--Event 'Joao' happens at 'Place' on '2019-10-50'
 
 doCommand :: String -> IO [EventInfo] -> IO ()
 doCommand input ioEvents = do
     events <- ioEvents --Now you can use events as [EventInfo]
     let input' = convertInput input
 
-    if (input' !! 0 == "Event") 
-        then do                        
-            let newEvent = addNewEvent2 (input' !! 1) (input' !! 4) (input' !! 6) events
-            --possiblyChangedEvents <- newEvent
-            putStrLn "ok"
-            loop $ return newEvent
+    if (events == [])
+        then putStrLn "Vazio"
+        else putStrLn "Preenchido"
 
+    --putStrLn $ show (events)
+
+    if(length input' < 3) 
+        then do
+            putStrLn standart_system_message
+            loop $ return events
         else do
-            possiblyChangedEvents <- ioEvents
-            loop $ return possiblyChangedEvents
-    {--
-    case (input' !! 2) of
-        "on" -> putStrLn "oi finded"
-        "at" -> putStrLn "at finded"
-        "about" -> putStrLn "about finded"
-        "happens" -> putStrLn "happens finded"
-        _ -> putStrLn "erro"--}
+            case (input' !! 2) of
+                "happens"-> do
+                    let dateInInt = convertDateToInt (input' !! 6)
+                    let validDate = correctDate (dateInInt !! 0) (dateInInt !! 1) (dateInInt !! 2)
+
+                    if(validDate == True)
+                        then do -- Valid Date
+                            let eventName = (filter (not . (`elem` "'")) (input' !! 1) )
+                            let eventPlace =  (filter (not . (`elem` "'")) (input' !! 4) )
+                            let newEvent = addNewEvent2 eventName eventPlace (input' !! 6) events
+                            putStrLn "ok"
+                            loop $ return newEvent
+                        else do -- Bad Date
+                            putStrLn "Bad date"
+                            loop $ return events
+                "about" -> do
+                    let teste = findEventsByName (input' !! 3) events
+                    if (teste == []) 
+                        then putStrLn "I do not know of such event"
+                        else putStrLn $ show (teste)
+                    
+                    loop $ return events
+                "on" -> do
+                    putStrLn "on"
+                "at" -> do
+                    putStrLn "at"
+                otherwise -> do
+                    putStrLn standart_system_message
+            {--
+            if (input' !! 0 == "Event") 
+                then do                        
+                    let newEvent = addNewEvent2 (input' !! 1) (input' !! 4) (input' !! 6) events
+                    --possiblyChangedEvents <- newEvent
+                    putStrLn "ok"
+                    loop $ return newEvent
+        
+                else do
+                    possiblyChangedEvents <- ioEvents
+                    loop $ return possiblyChangedEvents
+            
+            case (input' !! 2) of
+                "on" -> putStrLn "oi finded"
+                "at" -> putStrLn "at finded"
+                "about" -> putStrLn "about finded"
+                "happens" -> putStrLn "happens finded"
+                _ -> putStrLn "erro"--}
+            
+            --possiblyChangedEvents <- ioEvents
+            loop $ return events
+
     
-    possiblyChangedEvents <- ioEvents
-    loop $ return possiblyChangedEvents
 
 addNewEvent :: String -> String -> String -> [EventInfo]-> [EventInfo]
 addNewEvent eName ePlace eDate oldEvents = oldEvents++[makeEvent eName ePlace (convertDateToInt eDate)]
@@ -156,6 +200,11 @@ addNewEvent2 eName ePlace eDate oldEvents =
         False -> oldEvents
     where cDate = convertDateToInt eDate
 
+findEventsByName :: String -> [EventInfo]-> [EventInfo]
+findEventsByName nm ei = filter (\x -> name x == nm) ei
+
+findEventsByPlace :: String -> [EventInfo]-> [EventInfo]
+findEventsByPlace pl ei = filter (\x -> place x == pl) ei
 
 {--
 addNewEvent :: String -> String -> String -> [EventInfo]-> [EventInfo]
