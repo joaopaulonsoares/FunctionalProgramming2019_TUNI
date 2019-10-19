@@ -5,6 +5,7 @@ import qualified Data.ByteString.Lazy as B
 import qualified Data.ByteString as S
 import System.Environment  
 import System.IO.Error
+import Data.List.Split
 
 
 -- DATA.HS
@@ -143,3 +144,6 @@ examplePhonebook =
 
 tellAboutEventName :: String -> IO ()
 tellAboutEventName teste = putStrLn "teste"
+
+teste :: String -> [String]
+teste c = splitOn "'" c
