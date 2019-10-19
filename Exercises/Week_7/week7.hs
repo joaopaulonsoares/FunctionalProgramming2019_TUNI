@@ -1,4 +1,8 @@
 import Data.List.Split
+import Data.Function (on)
+import Data.List (sortBy)
+
+
 -- ====================================== Event functions ============================================
 newtype PlainString = PlainString String
 instance Show PlainString where
@@ -11,6 +15,7 @@ data EventInfo = EventInfo { name :: String
 
 instance Show EventInfo where
   show (EventInfo n p d) =  "Event " ++ show(PlainString n) ++ " happens at "  ++ show(PlainString p) ++ " on "  ++ show d
+
 
 makeEvent :: String -> String -> [Integer] -> EventInfo
 makeEvent name place date = EventInfo name place (makeDate3 date)
@@ -117,15 +122,17 @@ loop ioEvents =
  if input == "Quit"
    then putStrLn "bye"
    else doCommand input ioEvents    
---Event 'Event' happens at 'Place' on '2019-10-08'
---Event 'Joao' happens at 'Place' on '2019-10-08'
+--Event 'Event G0' happens at 'Place' on '2019-10-08'
+-- Event 'cEvent' happens at 'Place' on '2019-10-08'
+--Event 'bJoao' happens at 'Place' on '2019-10-08'
+--Event 'apaulo' happens at 'Place' on '2019-10-09'
 --Event 'Joao' happens at 'Place' on '2019-10-50'
 
 doCommand :: String -> IO [EventInfo] -> IO ()
 doCommand input ioEvents = do
     events <- ioEvents --Now you can use events as [EventInfo]
     let input' = convertInput input
-
+    let updatedEvents = []
 --    if (events == [])
 --        then putStrLn "Vazio"
 --        else putStrLn "Preenchido"
@@ -135,40 +142,84 @@ doCommand input ioEvents = do
     if(length input' < 3) 
         then do
             putStrLn standart_system_message
-            loop $ return events
+            --loop $ return events
         else do
-            case (input' !! 2) of --- input 0
-                "happens"-> do
-                    let dateInInt = convertDateToInt (input' !! 6)
+            case (input' !! 0) of --- input 0
+                "Event "-> do -- TODO caso o evento de mesmo nome já exista, substituir
+                    let dateInInt = convertDateToInt (input' !! 5)
                     let validDate = correctDate (dateInInt !! 0) (dateInInt !! 1) (dateInInt !! 2)
 
                     if(validDate == True)
                         then do -- Valid Date
                             let eventName = (filter (not . (`elem` "'")) (input' !! 1) )
-                            let eventPlace =  (filter (not . (`elem` "'")) (input' !! 4) )
+                            let eventPlace =  (filter (not . (`elem` "'")) (input' !! 3) )
                             let newEvent = addNewEvent2 eventName eventPlace dateInInt events
                             putStrLn "ok"
+                            --updatedEvents <- newEvent
+
                             loop $ return newEvent
                         else do -- Bad Date
                             putStrLn "Bad date"
                             loop $ return events
-                "about" -> do
-                    let teste = findEventsByName (input' !! 3) events
-                    if (length teste == 1) --(teste == [] || (length ) 
-                        then putStrLn $ show (teste !! 0) --putStrLn "I do not know of such event"
-                        else putStrLn "I do not know of such event"--putStrLn $ show (teste !! 0)
+                "Tell me about " -> do
+                    let eventName = (filter (not . (`elem` "'")) (input' !! 1) )
+                    let eventFinded = findEventsByName eventName events
+                    if (length eventFinded == 1)
+                        then putStrLn $ show (eventFinded !! 0)
+                        else putStrLn "I do not know of such event"
                     
-                    loop $ return events
-                "on" -> do
-                    putStrLn "on"
-                "at" -> do
-                    putStrLn "at"
+                    --loop $ return events
+                "What happens on " -> do
+                    let dateInInt = convertDateToInt (input' !! 1)
+                    let validDate = correctDate (dateInInt !! 0) (dateInInt !! 1) (dateInInt !! 2)
+                    let eventsFinded = findEventsByDate (makeDate3 dateInInt) events
+                    
+                    if(length eventsFinded == 0)
+                        then putStrLn "Nothing that I know of"
+                        else do
+                            let eventsSorted = sortPersons eventsFinded
+                            printElements eventsSorted
+
+                "What happens at " -> do
+                    let eventPlace = (filter (not . (`elem` "'")) (input' !! 1) )
+                    let eventsFinded = findEventsByPlace eventPlace events
+
+                    if (length eventsFinded == 0)
+                        then putStrLn "Nothing that I know of"
+                        else do
+                            let eventsSorted = sortPersons eventsFinded
+                            printElements eventsSorted
+
                 otherwise -> do
                     putStrLn standart_system_message
 
             loop $ return events
 
-    
+
+printElements :: [EventInfo] -> IO()
+printElements [] = return ()
+printElements (x:xs) = do
+    let message = "Event " ++ (pEventName x) ++ " happens at " ++ (pEventPlace x)
+    putStrLn $ message
+    printElements xs
+
+
+-- Sort functions
+comparing :: Ord b => (a -> b) -> a -> a -> Ordering
+comparing = on compare
+
+sortPersons :: [EventInfo] -> [EventInfo]
+sortPersons = sortBy (comparing pEventName)
+
+-- Record Syntax
+pEventName :: EventInfo -> String
+pEventName (EventInfo name _ _) = name    
+
+pEventPlace :: EventInfo -> String
+pEventPlace (EventInfo _ place _) = place
+
+pEventDate :: EventInfo -> Date
+pEventDate (EventInfo _ _ date) = date 
 
 addNewEvent :: String -> String -> String -> [EventInfo]-> [EventInfo]
 addNewEvent eName ePlace eDate oldEvents = oldEvents++[makeEvent eName ePlace (convertDateToInt eDate)]
@@ -188,25 +239,8 @@ findEventsByName nm ei = filter (\x -> name x == nm) ei
 findEventsByPlace :: String -> [EventInfo]-> [EventInfo]
 findEventsByPlace pl ei = filter (\x -> place x == pl) ei
 
-{--
-addNewEvent :: String -> String -> String -> [EventInfo]-> [EventInfo]
-addNewEvent eName ePlace eDate oldEvents = do
-    let cDate = convertDateToInt eDate
-
-    --return oldEvents
-    return (makeEvent eName ePlace cDate)
-    
-    -- Check if date is valid
-    if ((correctDate (cDate !! 0) (cDate !! 1) (cDate !! 2)) == True) 
-        then do
-            --putStrLn("ok")
-            let event = (makeEvent eName ePlace cDate)
-
-            return event
-
-        else do
-            --putStrLn("Bad date")
-            return (makeEvent eName ePlace [2019,08,10])--}
+findEventsByDate :: Date -> [EventInfo]-> [EventInfo]
+findEventsByDate dt ei = filter (\x -> date x == dt) ei
 
 convertInput :: String -> [String]
 convertInput command = splitOn "'" command 
@@ -214,5 +248,3 @@ convertInput command = splitOn "'" command
 --convertInput :: String -> [String]
 --convertInput command = words command 
 
---teste :: String -> [String]
---teste c = splitOn "'" c

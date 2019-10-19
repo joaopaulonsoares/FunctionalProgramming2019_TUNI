@@ -6,7 +6,8 @@ import qualified Data.ByteString as S
 import System.Environment  
 import System.IO.Error
 import Data.List.Split
-
+import Data.Function (on)
+import Data.List (sortBy)
 
 -- DATA.HS
 data PhoneType = WorkLandline | PrivateMobile | WorkMobile | Other deriving(Show, Read, Eq)
@@ -147,3 +148,5 @@ tellAboutEventName teste = putStrLn "teste"
 
 teste :: String -> [String]
 teste c = splitOn "'" c
+
+eventsSorted = sortBy (compare `on` place) events
